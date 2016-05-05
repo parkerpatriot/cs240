@@ -163,7 +163,7 @@ public class Dictionary implements ITrie{
 
         public int compareTo(Node node) {
             if (this.freq == node.freq) {
-                return this.word.compareTo(node.word);
+                return node.word.compareTo(this.word);
             } else if (this.freq > node.freq) {
                 return 1;
             }
