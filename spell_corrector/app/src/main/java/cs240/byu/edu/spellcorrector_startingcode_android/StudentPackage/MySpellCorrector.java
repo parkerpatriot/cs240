@@ -127,22 +127,17 @@ public class MySpellCorrector implements ISpellCorrector {
         }
     }
 
-    private String findSimilarInsertion(String word) {
+    private void findSimilarInsertion(String word) {
         StringBuilder iword;
-        StringBuilder notFound = new StringBuilder();
         ITrie.INode tempNode;
         for(int i=0; i<=word.length(); i++) {
             for(char c='a'; c<='z'; c++) {
                 iword = new StringBuilder(word);
-                iword.insert(i,c);
+                iword.insert(i, c);
                 tempNode = dictionary.find(iword.toString());
-                if(tempNode != null) {
-                    wordsSuggested.add(tempNode);
-                } else {
-                    if (save) {notFound.append(iword.toString() + "\n");}
-                }            }
+                addToResults(tempNode, iword.toString());
+            }
         }
-        return notFound.toString();
     }
 
     private void addToResults(ITrie.INode node, String word) {
