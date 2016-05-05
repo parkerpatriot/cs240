@@ -35,7 +35,7 @@ public class MySpellCorrector implements ISpellCorrector {
         }
 
     public String suggestSimilarWord(String inputWord) throws NoSimilarWordFoundException {
-        String suggest = find(inputWord);
+        String suggest = find(inputWord.toLowerCase());
         if (suggest != null) {
             return suggest;
         } else {

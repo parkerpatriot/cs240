@@ -55,6 +55,7 @@ public class Dictionary implements ITrie{
         return numNodes;
     }
 
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
