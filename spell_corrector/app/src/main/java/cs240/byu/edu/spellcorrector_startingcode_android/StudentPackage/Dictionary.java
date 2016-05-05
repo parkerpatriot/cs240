@@ -2,6 +2,7 @@ package cs240.byu.edu.spellcorrector_startingcode_android.StudentPackage;
 
 //import android.util.Log;
 
+import java.util.Arrays;
 import java.util.TreeSet;
 
 
@@ -169,8 +170,31 @@ public class Dictionary implements ITrie{
             }
         }
 
-        public boolean equals(Node node) {
-            return (this.word.equals(node.word)) && (this.freq == node.freq);
+//        public boolean equals(Node node) {
+//            return (this.word.equals(node.word)) && (this.freq == node.freq);
+//        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            if (freq != node.freq) return false;
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            if (!Arrays.equals(letters, node.letters)) return false;
+            return word != null ? word.equals(node.word) : node.word == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(letters);
+            result = 31 * result + freq;
+            result = 31 * result + (word != null ? word.hashCode() : 0);
+            return result;
         }
 
         public String toString() {
