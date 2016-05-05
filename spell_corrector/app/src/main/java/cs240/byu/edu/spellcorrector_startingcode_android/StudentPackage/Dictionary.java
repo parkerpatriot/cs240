@@ -14,12 +14,14 @@ public class Dictionary implements ITrie{
     private int numNodes;
     private Node root;
     private TreeSet<Node> dictSet;
+    private TreeSet<String> wordSet;
 
     public Dictionary(){
         numWords = 0;
         numNodes = 1;
         root = new Node();
         dictSet = new TreeSet<Node>();
+        wordSet = new TreeSet<String>();
     }
 
     private boolean wordIsGood(String word) {
@@ -56,8 +58,8 @@ public class Dictionary implements ITrie{
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for(Node node: dictSet) {
-            stringBuilder.append(node.word + "\n");
+        for(String word: wordSet) {
+            stringBuilder.append(word + "\n");
         }
         return stringBuilder.toString();
     }
@@ -111,6 +113,7 @@ public class Dictionary implements ITrie{
                 numWords++;
                 this.word = word;
                 dictSet.add(this);
+                wordSet.add(word);
                 return true;
             }
             // If not...
@@ -169,10 +172,6 @@ public class Dictionary implements ITrie{
                 return -1;
             }
         }
-
-//        public boolean equals(Node node) {
-//            return (this.word.equals(node.word)) && (this.freq == node.freq);
-//        }
 
 
         @Override
