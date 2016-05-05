@@ -22,6 +22,7 @@ public class MySpellCorrector implements ISpellCorrector {
         dictionary = new Dictionary();
         wordsSuggested = new TreeSet<ITrie.INode>();
         wordsNotFound = new HashSet<String>();
+        wordsNotFoundInProgress = new HashSet<String>();
     }
 
     public void useDictionary(InputStreamReader dictionaryFile) throws IOException {
@@ -31,7 +32,6 @@ public class MySpellCorrector implements ISpellCorrector {
                 word = _word.toLowerCase();
                 dictionary.add(word);
             }
-
         }
 
     public String suggestSimilarWord(String inputWord) throws NoSimilarWordFoundException {
@@ -46,13 +46,13 @@ public class MySpellCorrector implements ISpellCorrector {
     private String find(String inputWord) {
         wordsNotFoundInProgress.clear();
         wordsNotFound.clear();
+        wordsSuggested.clear();
         ITrie.INode wordFound = dictionary.find(inputWord);
         if(wordFound != null) {
             return wordFound.toString();
         }
         // search for close matches
         else{
-            wordsSuggested.clear();
             wordsNotFound.add(inputWord);
             for(int i=0; i<2; i++) {
                 save = (i<1);
@@ -67,13 +67,11 @@ public class MySpellCorrector implements ISpellCorrector {
 
 
     private void findEditDistance(){
-        int i = 0;
         for(String inputWord: wordsNotFound) {
             findSimilarAlternation(inputWord);
             findSimilarDeletion(inputWord);
             findSimilarInsertion(inputWord);
             findSimilarTransposition(inputWord);
-            i++;
         }
         swapNotFoundLists();
     }
@@ -149,7 +147,7 @@ public class MySpellCorrector implements ISpellCorrector {
         if(node != null) {
             wordsSuggested.add(node);
         } else {
-            if (save) {wordsNotFound.add(word);}
+            if (save) {wordsNotFoundInProgress.add(word);}
         }
     }
 

@@ -2,6 +2,8 @@ package cs240.byu.edu.spellcorrector_startingcode_android.StudentPackage;
 
 //import android.util.Log;
 
+import android.provider.UserDictionary;
+
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -55,7 +57,11 @@ public class Dictionary implements ITrie{
 
     @Override
     public String toString() {
-        return dictSet.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Node node: dictSet) {
+            stringBuilder.append(node.word + "\n");
+        }
+        return stringBuilder.toString();
     }
 
     @Override
