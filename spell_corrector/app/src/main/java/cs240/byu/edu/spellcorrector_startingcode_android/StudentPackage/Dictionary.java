@@ -43,7 +43,11 @@ public class Dictionary implements ITrie{
             return temp;
 
         } else {
-            throw new IllegalArgumentException(String.format("Illegal word: %s", word));
+            if(word.equals("")){
+                return null;
+            } else {
+                throw new IllegalArgumentException(String.format("Illegal word: %s", word));
+            }
         }
     }
 
