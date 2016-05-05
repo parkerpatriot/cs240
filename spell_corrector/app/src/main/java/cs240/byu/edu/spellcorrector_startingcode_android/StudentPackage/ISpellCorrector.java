@@ -29,6 +29,7 @@ public interface ISpellCorrector {
      * @return The suggestion
      * @throws NoSimilarWordFoundException If no similar word is in the dictionary
      */
+
     public String suggestSimilarWord(String inputWord) throws NoSimilarWordFoundException;
 
 }

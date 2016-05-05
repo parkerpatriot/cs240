@@ -69,7 +69,7 @@ public interface ITrie {
 	/*
 	 * EXAMPLE:
 	 *
-	 * public class Words implements ITrie {
+	 * public class Dictionary implements ITrie {
 	 *
 	 * 		public void add(String word) { ... }
 	 *
