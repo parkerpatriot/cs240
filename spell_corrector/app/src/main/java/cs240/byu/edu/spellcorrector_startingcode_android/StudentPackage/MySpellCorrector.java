@@ -86,6 +86,9 @@ public class MySpellCorrector implements ISpellCorrector {
     private void findSimilarDeletion(String word) {
         StringBuilder dword;
         ITrie.INode tempNode;
+        if(word.length() < 2) {
+            return;
+        }
         for(int i=0; i<word.length(); i++) {
             dword = new StringBuilder(word);
             dword.deleteCharAt(i);
