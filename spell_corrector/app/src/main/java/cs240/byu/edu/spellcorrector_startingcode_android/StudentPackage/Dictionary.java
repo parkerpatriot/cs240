@@ -1,6 +1,6 @@
 package cs240.byu.edu.spellcorrector_startingcode_android.StudentPackage;
 
-import android.util.Log;
+//import android.util.Log;
 
 import java.util.Random;
 import java.util.TreeSet;
@@ -13,16 +13,12 @@ public class Dictionary implements ITrie{
     private int numWords;
     private int numNodes;
     private Node root;
-//    private WordNode[] startLetters;
     private TreeSet<Node> dictSet;
-    private static Random randHashNumber = new Random();
-
 
     public Dictionary(){
         numWords = 0;
         numNodes = 1;
         root = new Node();
-//        startLetters = new WordNode[26];
         dictSet = new TreeSet<Node>();
     }
 
@@ -33,34 +29,9 @@ public class Dictionary implements ITrie{
     public void add(String word) {
         if (wordIsGood(word)) {
             root.insert(word, 0);
-
-
-//            int letter_index = word.charAt(0) - 'a';
-//            // Check to see if we've already added a word with the same starting letter
-//            if (startLetters[letter_index] == null) {
-//                WordNode newNode = new WordNode();
-//                numNodes++;
-//                startLetters[letter_index] = newNode;
-//                boolean success = newNode.insert(word, 1);
-//                if (success){
-//                    Log.d("Debug", "Insertion of new-letter-word successful!");
-//                }
-//                else{
-//                    Log.d("Debug", "Insert new failed!");
-//                }
-//            }
-//            else {
-//                boolean success = startLetters[letter_index].insert(word, 1);
-//                if (success){
-//                    Log.d("Debug", "Insertion of existing-letter-word successful!");
-//                }
-//                else{
-//                    Log.d("Debug", "Insert existing failed!");
-//                }
-//            }
         }
         else {
-            Log.d("Debug", String.format("Bad word: %s", word));
+//            Log.d("Debug", String.format("Bad word: %s", word));
         }
     }
 
@@ -84,11 +55,6 @@ public class Dictionary implements ITrie{
 
     @Override
     public String toString() {
-//        StringBuilder dict_string = new StringBuilder();
-//        for(Node i: dictSet){
-//
-//        }
-
         return dictSet.toString();
     }
 
@@ -101,8 +67,7 @@ public class Dictionary implements ITrie{
 
         if (numWords != that.numWords) return false;
         if (numNodes != that.numNodes) return false;
-        if (root != null ? !root.equals(that.root) : that.root != null) return false;
-        return dictSet != null ? dictSet.equals(that.dictSet) : that.dictSet == null;
+        return root != null ? root.equals(that.root) : that.root == null;
 
     }
 

@@ -16,11 +16,12 @@ public class MySpellCorrector implements ISpellCorrector {
     private HashSet<String> wordsNotFound;
     private TreeSet<ITrie.INode> wordsSuggested;
 
+    private boolean save = true;
+
     public MySpellCorrector(){
         dictionary = new Dictionary();
         wordsSuggested = new TreeSet<ITrie.INode>();
         wordsNotFound = new HashSet<String>();
-        wordsNotFoundInProgress = new HashSet<String>();
     }
 
     public void useDictionary(InputStreamReader dictionaryFile) throws IOException {
@@ -54,6 +55,7 @@ public class MySpellCorrector implements ISpellCorrector {
             wordsSuggested.clear();
             wordsNotFound.add(inputWord);
             for(int i=0; i<2; i++) {
+                save = (i<1);
                 findEditDistance();
                 if (wordsSuggested.size() > 0) {
                     return wordsSuggested.last().toString();
@@ -63,12 +65,15 @@ public class MySpellCorrector implements ISpellCorrector {
         }
     }
 
+
     private void findEditDistance(){
+        int i = 0;
         for(String inputWord: wordsNotFound) {
             findSimilarAlternation(inputWord);
             findSimilarDeletion(inputWord);
             findSimilarInsertion(inputWord);
             findSimilarTransposition(inputWord);
+            i++;
         }
         swapNotFoundLists();
     }
@@ -122,24 +127,29 @@ public class MySpellCorrector implements ISpellCorrector {
         }
     }
 
-    private void findSimilarInsertion(String word) {
+    private String findSimilarInsertion(String word) {
         StringBuilder iword;
+        StringBuilder notFound = new StringBuilder();
         ITrie.INode tempNode;
         for(int i=0; i<=word.length(); i++) {
             for(char c='a'; c<='z'; c++) {
                 iword = new StringBuilder(word);
                 iword.insert(i,c);
                 tempNode = dictionary.find(iword.toString());
-                addToResults(tempNode, iword.toString());
-            }
+                if(tempNode != null) {
+                    wordsSuggested.add(tempNode);
+                } else {
+                    if (save) {notFound.append(iword.toString() + "\n");}
+                }            }
         }
+        return notFound.toString();
     }
 
     private void addToResults(ITrie.INode node, String word) {
         if(node != null) {
             wordsSuggested.add(node);
         } else {
-            wordsNotFoundInProgress.add(word);
+            if (save) {wordsNotFound.add(word);}
         }
     }
 

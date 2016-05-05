@@ -42,11 +42,6 @@ public class SpellCorrector extends AppCompatActivity
 
         String file = getIntent().getExtras().getString(MainActivity.fileSelectedKey);
 
-        /**
-         * TODO set studentController to a new instance of your class that implements ISpellCorrector
-         * E.studentController = new MySpellCorrector();
-         */
-
         studentController = new MySpellCorrector();
 
         mainSearchScreen = (RelativeLayout)findViewById(R.id.mainSearchPage);
