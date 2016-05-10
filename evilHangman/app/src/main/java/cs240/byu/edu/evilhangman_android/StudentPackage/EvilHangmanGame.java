@@ -1,6 +1,6 @@
 package cs240.byu.edu.evilhangman_android.StudentPackage;
 
-import android.util.Log;
+//import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -192,7 +192,7 @@ public class EvilHangmanGame implements StudentEvilHangmanGameController {
         public int compareTo(Partition part) {
             int compare = Integer.compare(this.length(), part.length());
             if (compare == 0) {
-                compare = Integer.compare(charFreq, part.charFreq);
+                compare = Integer.compare(part.charFreq, charFreq); // less is more :) so invert
             }
             if (compare == 0) {
                 compare = Integer.compare(rightMeasure, part.rightMeasure);
