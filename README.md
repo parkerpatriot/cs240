@@ -4,4 +4,4 @@
 
 ### SuperAsteroids
 
-[Javadocs here!](http://parkerpatriot.github.io/cs240/SuperAsteroids/docs/index.html)
+[Javadocs here!](http://parkerpatriot.github.io/parkerpatriot.github.io/index.html)
