@@ -107,6 +107,8 @@ public class EvilHangmanGame implements StudentEvilHangmanGameController {
         if(currentWordList.size() == 1){
             if (currentWordList.iterator().next().equals(currentWord)){
                 gameStatus = GAME_STATUS.PLAYER_WON;
+            } else if (numGuesses == 0) {
+                gameStatus = GAME_STATUS.PLAYER_LOST;
             }
         } else if (numGuesses == 0) {
             gameStatus = GAME_STATUS.PLAYER_LOST;
