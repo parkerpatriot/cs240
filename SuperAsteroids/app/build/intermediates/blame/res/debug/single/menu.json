@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/jparker/dev/cs240/SuperAsteroids/app/build/intermediates/res/merged/debug/menu/menu_import.xml",
+        "source": "/Users/jparker/dev/cs240/SuperAsteroids/app/src/main/res/menu/menu_import.xml"
+    },
+    {
+        "merged": "/Users/jparker/dev/cs240/SuperAsteroids/app/build/intermediates/res/merged/debug/menu/main.xml",
+        "source": "/Users/jparker/dev/cs240/SuperAsteroids/app/src/main/res/menu/main.xml"
+    },
+    {
+        "merged": "/Users/jparker/dev/cs240/SuperAsteroids/app/build/intermediates/res/merged/debug/menu/menu_main.xml",
+        "source": "/Users/jparker/dev/cs240/SuperAsteroids/app/src/main/res/menu/menu_main.xml"
+    }
+]
