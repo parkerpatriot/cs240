@@ -70,8 +70,8 @@ public class EvilHangmanGame implements StudentEvilHangmanGameController {
             throw new GuessAlreadyMadeException();
         } else {
             guessedLetters.add(guess);
-            numGuesses--;
             keySet.clear();
+            numGuesses--;
 
             for(String word: currentWordList) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -104,13 +104,12 @@ public class EvilHangmanGame implements StudentEvilHangmanGameController {
     }
 
     private void updateGameStatus() {
-        if (numGuesses == 0) {
-            gameStatus = GAME_STATUS.PLAYER_LOST;
-        }
-        else if(currentWordList.size() == 1){
+        if(currentWordList.size() == 1){
             if (currentWordList.iterator().next().equals(currentWord)){
                 gameStatus = GAME_STATUS.PLAYER_WON;
             }
+        } else if (numGuesses == 0) {
+            gameStatus = GAME_STATUS.PLAYER_LOST;
         }
     }
 
