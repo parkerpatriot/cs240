@@ -1,31 +1,31 @@
 package edu.byu.cs.superasteroids.model;
 
-import java.util.Scanner;
-
 /**
  * Created by jparker on 5/13/16.
  */
 public class MainBody {
-    private Coordinate mCannonAttach;
-    private Coordinate mEngineAttach;
-    private Coordinate mLeftWingAttach;
+    private Coordinate mCannonAttachPoint;
+    private Coordinate mEngineAttachPoint;
+    private Coordinate mLeftWingAttachPoint;
     private String mImage;
     private int mWidth;
     private int mHeight;
+    private int id;
 
     /**
      * Constructor
-     * @param cannonAttach (required)
-     * @param engineAttach (required)
-     * @param leftWingAttach (required)
+     * @param cannonAttachPoint (required)
+     * @param engineAttachPoint (required)
+     * @param leftWingAttachPoint (required)
      * @param image path to image (required)
      * @param width image width (required)
      * @param height image height (required)
      */
-    public MainBody(Coordinate cannonAttach, Coordinate engineAttach, Coordinate leftWingAttach, String image, int width, int height) {
-        mCannonAttach = cannonAttach;
-        mEngineAttach = engineAttach;
-        mLeftWingAttach = leftWingAttach;
+    public MainBody(Coordinate cannonAttachPoint, Coordinate engineAttachPoint,
+                    Coordinate leftWingAttachPoint, String image, int width, int height) {
+        mCannonAttachPoint = cannonAttachPoint;
+        mEngineAttachPoint = engineAttachPoint;
+        mLeftWingAttachPoint = leftWingAttachPoint;
         mImage = image;
         mWidth = width;
         mHeight = height;
@@ -35,24 +35,24 @@ public class MainBody {
      * Getter for cannot attach point
      * @return cannon attach coordinate
      */
-    public Coordinate getCannonAttach() {
-        return mCannonAttach;
+    public Coordinate getCannonAttachPoint() {
+        return mCannonAttachPoint;
     }
 
     /**
      * Getter for engine attach point
      * @return engine attach coordinate
      */
-    public Coordinate getEngineAttach() {
-        return mEngineAttach;
+    public Coordinate getEngineAttachPoint() {
+        return mEngineAttachPoint;
     }
 
     /**
      * Getter for left wing attach point
      * @return left wing attach coordinate
      */
-    public Coordinate getLeftWingAttach() {
-        return mLeftWingAttach;
+    public Coordinate getLeftWingAttachPoint() {
+        return mLeftWingAttachPoint;
     }
 
     /**
@@ -77,5 +77,13 @@ public class MainBody {
      */
     public int getHeight() {
         return mHeight;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

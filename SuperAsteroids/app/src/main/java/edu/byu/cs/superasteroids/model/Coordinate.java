@@ -1,27 +1,27 @@
 package edu.byu.cs.superasteroids.model;
 
+import android.graphics.PointF;
+
 import java.util.Scanner;
 
 /**
  * Created by jparker on 5/14/16.
  */
-public class Coordinate {
+public class Coordinate extends PointF {
+    public static final Creator<PointF> CREATOR = null;
     private String mStrCoordinates;
-    private int x;
-    private int y;
 
     public Coordinate(String strCoordinates) {
+        super();
         mStrCoordinates = strCoordinates;
-        Scanner scanner = new Scanner(strCoordinates);
-        x = scanner.nextInt();
-        y = scanner.nextInt();
+        String[] coords = mStrCoordinates.split(",");
+        int x = Integer.parseInt(coords[0]);
+        int y = Integer.parseInt(coords[1]);
+        set((float)x, (float)y);
     }
 
-    public int x() {
-        return x;
-    }
-
-    public int y() {
-        return y;
+    @Override
+    public String toString() {
+        return mStrCoordinates;
     }
 }

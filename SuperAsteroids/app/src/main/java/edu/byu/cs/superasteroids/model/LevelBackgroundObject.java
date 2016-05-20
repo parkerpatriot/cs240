@@ -7,13 +7,23 @@ import java.util.Scanner;
  */
 public class LevelBackgroundObject {
     private Coordinate mPosition;
-    public int mObjectId;
-    public int mScale;
+    private int mObjectId;
+    private float mScale;
+    private int mLevelId;
 
-    public LevelBackgroundObject(Coordinate position, int objectId, int scale) {
+
+    /**
+     * Constructor.
+     * @param position  The position of the object. Example: "150, 75"
+     * @param objectId  The ID of the background object. FK: background_objects(id)
+     * @param scale     The scale of the background object. Example: 2.0
+     * @param levelId  The level number the object appears on. FK: levels(id)
+     */
+    public LevelBackgroundObject(Coordinate position, int objectId, float scale, int levelId) {
         mPosition = position;
         mObjectId = objectId;
         mScale = scale;
+        mLevelId = levelId;
     }
 
     /**
@@ -28,7 +38,11 @@ public class LevelBackgroundObject {
         return mObjectId;
     }
 
-    public int getScale() {
+    public float getScale() {
         return mScale;
+    }
+
+    public int getLevelId() {
+        return mLevelId;
     }
 }

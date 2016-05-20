@@ -8,7 +8,15 @@ public class LeftWing {
     private Coordinate mAttachPoint;
     private int mWidth;
     private int mHeight;
+    private int id;
 
+    /**
+     * Constructor.
+     * @param image         The path to the wing image
+     * @param attachPoint   The attchment point to the rest of the ship. Example: "150, 75"
+     * @param width         The wing image width
+     * @param height        The wing image height
+     */
     public LeftWing(String image, Coordinate attachPoint, int width, int height) {
         mImage = image;
         mAttachPoint = attachPoint;
@@ -30,5 +38,13 @@ public class LeftWing {
 
     public int getHeight() {
         return mHeight;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

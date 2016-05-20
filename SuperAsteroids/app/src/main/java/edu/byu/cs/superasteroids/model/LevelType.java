@@ -13,16 +13,31 @@ public class LevelType {
     private int mWidth;
     private int mHeight;
     private String mMusic;
-    private List<LevelBackgroundObject> mLevelObjects;
+    private List<LevelBackgroundObject> mLevelBackgroundObjects;
+    private List<LevelAsteroid> mLevelAsteroids;
 
-    public LevelType(int number, String title, String hint, int width, int height, String music, List<LevelBackgroundObject> levelObjects) {
+    /**
+     * Constructor.
+     * @param number            The level number (this will serve as the primary key)
+     * @param title             The name (or title) of the level
+     * @param hint              A hint corresponding to the level. Example: "Destroy a regular asteroid"
+     * @param width             The image width (pixels)
+     * @param height            The image height (pixels)
+     * @param music             The path to the background music file for the level
+     * @param levelBackgroundObjects      A list of background objects which appear on the level
+     * @param levelAsteroids    A list of asteroid types that appear on the level
+     */
+    public LevelType(int number, String title, String hint, int width, int height, String music,
+                     List<LevelBackgroundObject> levelBackgroundObjects, List<LevelAsteroid> levelAsteroids) {
         mNumber = number;
         mTitle = title;
         mHint = hint;
         mWidth = width;
+
         mHeight = height;
         mMusic = music;
-        mLevelObjects = levelObjects;
+        mLevelBackgroundObjects = levelBackgroundObjects;
+        mLevelAsteroids = levelAsteroids;
     }
 
     public int getNumber() {
@@ -49,15 +64,19 @@ public class LevelType {
         return mMusic;
     }
 
-    public List<LevelBackgroundObject> getLevelObjects() {
-        return mLevelObjects;
+    public List<LevelBackgroundObject> getLevelBackgroundObjects() {
+        return mLevelBackgroundObjects;
     }
 
-    public void addLevelObject(LevelBackgroundObject levelObject) {
-        mLevelObjects.add(levelObject);
+    public List<LevelAsteroid> getLevelAsteroids() {
+        return mLevelAsteroids;
     }
 
-    public void setLevelObjects(List<LevelBackgroundObject> levelObjects) {
-        mLevelObjects = levelObjects;
+    public void addLevelBackgroundObject(LevelBackgroundObject levelObject) {
+        mLevelBackgroundObjects.add(levelObject);
+    }
+
+    public void setLevelBackgroundObjects(List<LevelBackgroundObject> levelBackgroundObjects) {
+        mLevelBackgroundObjects = levelBackgroundObjects;
     }
 }

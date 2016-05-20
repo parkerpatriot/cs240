@@ -12,7 +12,17 @@ public class Engine {
     private String mImage;
     private int mWidth;
     private int mHeight;
+    private int id;
 
+    /**
+     * Constructor.
+     * @param baseSpeed     The default speed of the engine
+     * @param baseTurnRate  The turn rate of engine
+     * @param attachPoint   The attachment point to the rest of the ship. Example: "150, 75"
+     * @param image         The path to the engine image
+     * @param width         The width of the engine image (pixels)
+     * @param height        The height of the engine image (pixels)
+     */
     public Engine(int baseSpeed, int baseTurnRate, Coordinate attachPoint, String image, int width, int height) {
         mBaseSpeed = baseSpeed;
         mBaseTurnRate = baseTurnRate;
@@ -44,5 +54,13 @@ public class Engine {
 
     public int getHeight() {
         return mHeight;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -9,7 +9,15 @@ public class AsteroidType implements Comparable<AsteroidType> {
     private String mImage;
     private int mWidth;
     private int mHeight;
-
+    private int id;
+    
+    /**
+     * Constructor.
+     * @param type      Usually the name of the asteroid. Example: "octeroid"
+     * @param image     The path to the asteroid image
+     * @param width     The image width (pixels)
+     * @param height    The image height (pixels)
+     */
     public AsteroidType(String type, String image, int width, int height) {
         mType = type;
         mImage = image;
@@ -58,5 +66,13 @@ public class AsteroidType implements Comparable<AsteroidType> {
         result = 31 * result + mWidth;
         result = 31 * result + mHeight;
         return result;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

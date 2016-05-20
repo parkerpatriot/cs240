@@ -1,6 +1,7 @@
 package edu.byu.cs.superasteroids.main_menu;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,8 +13,11 @@ import android.view.ViewGroup;
 import edu.byu.cs.superasteroids.R;
 import edu.byu.cs.superasteroids.base.ActionBarActivityView;
 import edu.byu.cs.superasteroids.content.ContentManager;
+import edu.byu.cs.superasteroids.database.DAO;
+import edu.byu.cs.superasteroids.database.DbOpenHelper;
 import edu.byu.cs.superasteroids.game.GameActivity;
 import edu.byu.cs.superasteroids.importer.ImportActivity;
+import edu.byu.cs.superasteroids.model.Model;
 import edu.byu.cs.superasteroids.ship_builder.ShipBuildingActivity;
 
 public class MainActivity extends ActionBarActivityView implements IMainMenuView {
@@ -35,7 +39,10 @@ public class MainActivity extends ActionBarActivityView implements IMainMenuView
 
 
         //TODO: Initialize your database
- 
+        DbOpenHelper dbOpenHelper = new DbOpenHelper(getBaseContext());
+        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
+        DAO.SINGLETON.setDb(database);
+
 
         ContentManager.getInstance().setResources(getResources());
 
@@ -81,6 +88,9 @@ public class MainActivity extends ActionBarActivityView implements IMainMenuView
     }
 
     public void startGame(View v) {
+        // TODO: check to see if Model has been initialized
+        // TODO: initialize the model
+        Model.SINGLETON.initialize();
         Intent intent = new Intent(this, ShipBuildingActivity.class);
         startActivity(intent);
     }

@@ -1,13 +1,20 @@
 package edu.byu.cs.superasteroids.database;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import edu.byu.cs.superasteroids.model.AsteroidType;
 import edu.byu.cs.superasteroids.model.BackgroundObject;
 import edu.byu.cs.superasteroids.model.Cannon;
+import edu.byu.cs.superasteroids.model.Coordinate;
 import edu.byu.cs.superasteroids.model.Engine;
 import edu.byu.cs.superasteroids.model.LeftWing;
+import edu.byu.cs.superasteroids.model.LevelAsteroid;
 import edu.byu.cs.superasteroids.model.LevelBackgroundObject;
 import edu.byu.cs.superasteroids.model.LevelType;
 import edu.byu.cs.superasteroids.model.MainBody;
@@ -22,171 +29,535 @@ import edu.byu.cs.superasteroids.model.PowerCore;
  * @version 1.0
  */
 public class DAO {
-    private static DAO ourInstance = new DAO();
+    public static final DAO SINGLETON = new DAO();
+    private SQLiteDatabase db;
 
     /**
      * Gets the single instance of the DAO
      * @return A reference to the DAO object
      */
-    public static DAO getInstance() {
-        return ourInstance;
-    }
+    private DAO() {db = null;}
 
-    private DAO() {
+    public void setDb(SQLiteDatabase db) {
+        this.db = db;
     }
 
     /**
-     * Adds a background image to the database.
-     * @param imagePath A String representing the path to the the image
+     * Adds a background object to the database.
+     * @param backgroundObject A BackgroundObject object
      */
-    public void addBackgroundObject(String imagePath) {}
+    public boolean addBackgroundObject(BackgroundObject backgroundObject) {
+        ContentValues values = new ContentValues();
+        values.put("image", backgroundObject.getImage());
+
+        long id = db.insert("background_objects", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Get a list of all background objects in the database
      * @return A list of BackgroundObject objects
      */
-    public List<LevelBackgroundObject> getBackgroundObjects() {
-        return null;
+    public List<BackgroundObject> getAllBackgroundObjects() {
+        ArrayList<BackgroundObject> backgroundObjects = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_BACKGROUND_OBJECT_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                String image = cursor.getString(1);
+                BackgroundObject backgroundObject = new BackgroundObject(image);
+                // backgroundObject.setId(id);
+                backgroundObjects.add(backgroundObject);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return backgroundObjects;
     }
 
     /**
-     * Adds an asteroid type to the database.
-     * @param type      Usually the name of the asteroid. Example: "octeroid"
-     * @param image     The path to the asteroid image
-     * @param width     The image width (pixels)
-     * @param height    The image height (pixels)
+     * Adds and astroid to the database.
+      * @param asteroidType An AsteroidType object
      */
-    public void addAstroid(String type, String image, int width, int height) {}
+    public boolean addAsteroidType(AsteroidType asteroidType) {
+        ContentValues values = new ContentValues();
+        values.put("name", asteroidType.getType());
+        values.put("image", asteroidType.getImage());
+        values.put("width", asteroidType.getWidth());
+        values.put("height", asteroidType.getHeight());
+
+        long id = db.insert("asteroid_types", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
+
+    public List<AsteroidType> getAllAsteroidTypes() {
+        ArrayList<AsteroidType> asteroidTypes = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_ASTEROID_TYPE_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String image = cursor.getString(2);
+                int width = cursor.getInt(3);
+                int height = cursor.getInt(4);
+                AsteroidType asteroid = new AsteroidType(name, image, width, height);
+                // asteroid.setId(id);
+                asteroidTypes.add(asteroid);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return asteroidTypes;
+    }
 
     /**
      * Adds a level to the database.
-     * @param number    The level number (this will serve as the primary key)
-     * @param title     The name (or title) of the level
-     * @param hint      A hint corresponding to the level. Example: "Destroy a regular asteroid"
-     * @param width     The image width (pixels)
-     * @param height    The image height (pixels)
-     * @param music     The path to the background music file for the level
+     * @param levelType A LevelType object
      */
-    public void addLevel(int number, String title, String hint, int width, int height, String music) {}
+    public boolean addLevel(LevelType levelType) {
+        ContentValues values = new ContentValues();
+        values.put("id", levelType.getNumber());
+        values.put("title", levelType.getTitle());
+        values.put("hint", levelType.getHint());
+        values.put("width", levelType.getWidth());
+        values.put("height", levelType.getHeight());
+        values.put("music", levelType.getMusic());
+        long id = db.insert("levels", null, values);
+        addLevelBackgroundObjects(levelType.getLevelBackgroundObjects());
+        addLevelAsteroids(levelType.getLevelAsteroids());
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Gets a list of all levels in the database.
      * @return A list of LevelType objects
      */
-    public List<LevelType> getLevels() {
-        return null;
+    public List<LevelType> getAllLevels() {
+        ArrayList<LevelType> levelTypes = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_LEVEL_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int number = cursor.getInt(0);
+                String title = cursor.getString(1);
+                String hint = cursor.getString(2);
+                int width = cursor.getInt(3);
+                int height = cursor.getInt(4);
+                String music = cursor.getString(5);
+                List<LevelBackgroundObject> levelBackgroundObjects = getLevelBackgroundObjects(number);
+                List<LevelAsteroid> levelAsteroids = getLevelAsteroids(number);
+                LevelType levelType = new LevelType(number, title, hint, width, height, music, levelBackgroundObjects, levelAsteroids);
+                levelTypes.add(levelType);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return levelTypes;
     }
 
-    /**
-     * Maps an asteroid type to a particular level in the database.
-     * @param number    The number of asteroids with ID asteroidId on
-     * @param astroidId The ID number of the asteroid. FK: asteroid(id)
-     * @param levelId   The level number that the asteroid appears on. FK: levels(id)
-     */
-    public void addLevelAsteroid(int number, int astroidId, int levelId){}
+    public boolean addLevelAsteroid(LevelAsteroid levelAsteroid){
+        ContentValues values = new ContentValues();
+        values.put("level_id", levelAsteroid.getLevelId());
+        values.put("asteroid_id", levelAsteroid.getAsteroidId());
+        values.put("count", levelAsteroid.getNumber());
 
-    /**
-     * Maps a background object to a particular level in the database.
-     * @param position  The position of the object. Example: "150, 75"
-     * @param objectId  The ID of the background object. FK: background_objects(id)
-     * @param scale     The scale of the background object. Example: 2.0
-     * @param level_id  The level number the object appears on. FK: levels(id)
-     */
-    public void addLevelBackgroundObject(String position, int objectId, int scale, int level_id) {}
+        long id = db.insert("level_asteroid_types", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+        return result;
+    }
+    public boolean addLevelBackgroundObject(LevelBackgroundObject levelBackgroundObject) {
+        ContentValues values = new ContentValues();
+        values.put("level_id", levelBackgroundObject.getLevelId());
+        values.put("object_id", levelBackgroundObject.getObjectId());
+        values.put("position", levelBackgroundObject.getPosition().toString());
+        values.put("scale", levelBackgroundObject.getScale());
+
+        long id = db.insert("level_background_objects", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean addLevelAsteroids(List<LevelAsteroid> levelAsteroids){
+        for(LevelAsteroid levelAsteroid: levelAsteroids) {
+            if(!addLevelAsteroid(levelAsteroid)){
+                return false;
+            }
+        }
+        return true;
+    }
+    private List<LevelAsteroid> getLevelAsteroids(int level_id) {
+        List<LevelAsteroid> levelAsteroids = new ArrayList<>();
+        Cursor cursor = db.rawQuery(String.format(Locale.ENGLISH,
+                "select * from level_asteroid_types where level_id = %d", level_id),
+                EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int levelId = cursor.getInt(0);
+                int asteroidId = cursor.getInt(1);
+                int count = cursor.getInt(2);
+                LevelAsteroid levelAsteroid = new LevelAsteroid(count, asteroidId, levelId);
+                levelAsteroids.add(levelAsteroid);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return levelAsteroids;
+    }
+    private List<LevelBackgroundObject> getLevelBackgroundObjects(int level_id) {
+        ArrayList<LevelBackgroundObject> backgroundObjects = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(String.format(Locale.ENGLISH,
+                "select * from level_background_objects where level_id = %d", level_id),
+                EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int levelId = cursor.getInt(0);
+                int objectId = cursor.getInt(1);
+                Coordinate position = new Coordinate(cursor.getString(2));
+                float scale = cursor.getFloat(3);
+                LevelBackgroundObject levelBackgroundObject = new LevelBackgroundObject(position, objectId, scale, levelId);
+                backgroundObjects.add(levelBackgroundObject);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return backgroundObjects;
+    }
+    private boolean addLevelBackgroundObjects(List<LevelBackgroundObject> levelBackgroundObjects) {
+        for(LevelBackgroundObject levelBackgroundObject: levelBackgroundObjects) {
+            if(!addLevelBackgroundObject(levelBackgroundObject)){
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Adds a cannon to the database.
-     * @param attachPoint   The attachment point to the rest of the ship. Example: "150, 75"
-     * @param emitPoint     The point at which the lasers are emitted. Example: "200, 75"
-     * @param image         The path to the cannon image
-     * @param width         The image width (pixels)
-     * @param height        The image height (pixels)
-     * @param attackImage   The path to the firing cannon image
-     * @param attackWidth   The width of the firing cannon image
-     * @param attackHeight  The height of the firing cannon image
-     * @param attackSound   The path to the sound of the cannon firing
-     * @param damage        The damage power of the cannon
+     * @param cannon A Cannon object
      */
-    public void addCannon(String attachPoint, String emitPoint, String image, int width, int height,
-                                 String attackImage, int attackWidth, int attackHeight, String attackSound,
-                                 int damage) {}
+    public boolean addCannon(Cannon cannon) {
+        ContentValues values = new ContentValues();
+        values.put("image", cannon.getImage());
+        values.put("attach_point", cannon.getAttachPoint().toString());
+        values.put("emit_point", cannon.getEmitPoint().toString());
+        values.put("width", cannon.getWidth());
+        values.put("height", cannon.getHeight());
+        values.put("image_attack", cannon.getAttackImage());
+        values.put("width_attack", cannon.getAttackWidth());
+        values.put("height_attack", cannon.getAttackHeight());
+        values.put("image_attack", cannon.getAttackImage());
+        values.put("sound_attack", cannon.getAttackSound());
+        values.put("damage", cannon.getDamage());
+        long id = db.insert("cannons", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Gets a list of all cannons in the database.
      * @return A list of Cannon objects
      */
-    public List<Cannon> getCannons() {
-        return null;
-    }
+    public List<Cannon> getAllCannons() {
+        ArrayList<Cannon> cannons = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_CANNON_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                String image = cursor.getString(1);
+                Coordinate attachPoint = new Coordinate(cursor.getString(2));
+                Coordinate emitPoint = new Coordinate(cursor.getString(3));
+                int width = cursor.getInt(4);
+                int height = cursor.getInt(5);
+                String attackImage = cursor.getString(6);
+                int attackWidth = cursor.getInt(7);
+                int attackHeight = cursor.getInt(8);
+                String attackSound = cursor.getString(9);
+                int damage = cursor.getInt(10);
+                Cannon cannon = new Cannon(attachPoint, emitPoint, image, width, height,
+                        attackImage, attackWidth, attackHeight, attackSound, damage);
+                // cannon.setId(id);
+                cannons.add(cannon);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return cannons;    }
 
     /**
      * Adds an engine to the database.
-     * @param baseSpeed     The default speed of the engine
-     * @param baseTurnRate  The turn rate of engine
-     * @param attachPoint   The attachment point to the rest of the ship. Example: "150, 75"
-     * @param image         The path to the engine image
-     * @param width         The width of the engine image (pixels)
-     * @param height        The height of the engine image (pixels)
+     * @param engine An Engine object
      */
-    public void addEngine(int baseSpeed, int baseTurnRate, String attachPoint, String image, int width, int height) {}
+    public boolean addEngine(Engine engine) {
+        ContentValues values = new ContentValues();
+        values.put("image", engine.getImage());
+        values.put("attach_point", engine.getAttachPoint().toString());
+        values.put("base_speed", engine.getBaseSpeed());
+        values.put("base_turn_rate", engine.getBaseTurnRate());
+        values.put("width", engine.getWidth());
+        values.put("height", engine.getHeight());
+        long id = db.insert("engines", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Returns a list of all engines in the database.
      * @return A list of Engine objects
      */
-    public List<Engine> getEngines() {
-        return null;
+    public List<Engine> getAllEngines() {
+        ArrayList<Engine> engines = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_ENGINE_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                int baseSpeed = cursor.getInt(1);
+                int baseTurnRate = cursor.getInt(2);
+                Coordinate attachPoint = new Coordinate(cursor.getString(3));
+                String image = cursor.getString(4);
+                int width = cursor.getInt(3);
+                int height = cursor.getInt(4);
+                Engine engine = new Engine(baseSpeed, baseTurnRate, attachPoint, image, width, height);
+                // engine.setId(id);
+                engines.add(engine);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return engines;
     }
 
     /**
      * Adds a left wing (aka "extraPart" to the database.
-     * @param image         The path to the wing image
-     * @param attachPoint   The attchment point to the rest of the ship. Example: "150, 75"
-     * @param width         The wing image width
-     * @param height        The wing image height
+     * @param leftWing A LeftWing object
      */
-    public void addLeftWing(String image, String attachPoint, int width, int height) {}
+    public boolean addLeftWing(LeftWing leftWing) {
+        ContentValues values = new ContentValues();
+        values.put("attach_point", leftWing.getAttachPoint().toString());
+        values.put("image", leftWing.getImage());
+        values.put("width", leftWing.getWidth());
+        values.put("height", leftWing.getHeight());
+        long id = db.insert("left_wings", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Gets a list of all left wings in the database.
      * @return A list of LeftWing objects
      */
-    public List<LeftWing> getLeftWings() {
-        return null;
+    public List<LeftWing> getAllLeftWings() {
+        ArrayList<LeftWing> leftWings = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_LEFT_WING_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                Coordinate attachPoint = new Coordinate(cursor.getString(1));
+                String image = cursor.getString(2);
+                int width = cursor.getInt(3);
+                int height = cursor.getInt(4);
+                LeftWing leftWing = new LeftWing(image, attachPoint, width, height);
+                // leftWing.setId(id);
+                leftWings.add(leftWing);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return leftWings;
     }
 
     /**
      * Adds a mainBody to the database.
-     * @param cannonAttach      The attachment point of the cannon. Example: "150, 75"
-     * @param engineAttach      The attachment point of the engine. Example: "150, 75"
-     * @param leftWingAttach    The attachment point of the left wing. Example: "150, 75"
-     * @param image             The path to the main body image
-     * @param width             The main body image width (pixels)
-     * @param height            The main body image height (pixels)
+     * @param mainBody A MainBody object
      */
-    public void addMainBody(String cannonAttach, String engineAttach, String leftWingAttach, String image, int width, int height) {}
+    public boolean addMainBody(MainBody mainBody) {
+        ContentValues values = new ContentValues();
+        values.put("image", mainBody.getImage());
+        values.put("cannon_attach_point", mainBody.getCannonAttachPoint().toString());
+        values.put("engine_attach_point", mainBody.getEngineAttachPoint().toString());
+        values.put("left_wing_attach_point", mainBody.getLeftWingAttachPoint().toString());
+        values.put("width", mainBody.getWidth());
+        values.put("height", mainBody.getHeight());
+        long id = db.insert("main_bodies", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Gets a list of all the main bodies in the database.
      * @return A list of MainBody objects
      */
-    public List<MainBody> getMainBodies() {
-        return null;
+    public List<MainBody> getAllMainBodies() {
+        ArrayList<MainBody> mainBodies = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_MAIN_BODY_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                Coordinate cannonAttachPoint = new Coordinate(cursor.getString(1));
+                Coordinate engineAttachPoint = new Coordinate(cursor.getString(2));
+                Coordinate leftWingAttachPoint = new Coordinate(cursor.getString(3));
+                String image = cursor.getString(2);
+                int width = cursor.getInt(3);
+                int height = cursor.getInt(4);
+                MainBody mainBody = new MainBody(cannonAttachPoint, engineAttachPoint, leftWingAttachPoint, image, width, height);
+                // mainBody.setId(id);
+                mainBodies.add(mainBody);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return mainBodies;
     }
 
     /**
      * Adds a power core to the database.
-     * @param cannonBoost   Cannon boost power
-     * @param engineBoost   Engine boost power
-     * @param image         The path to the power core image
+     * @param powerCore A PowerCore object
      */
-    public void addPowerCore(int cannonBoost, int engineBoost, String image) {}
+    public boolean addPowerCore(PowerCore powerCore) {
+        ContentValues values = new ContentValues();
+        values.put("image", powerCore.getImage());
+        values.put("cannon_boost", powerCore.getCannonBoost());
+        values.put("engine_boost", powerCore.getEngineBoost());
+        long id = db.insert("power_cores", null, values);
+
+        boolean result = false;
+        if (id >= 0) {
+//            object.setId(id);
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Gets a list of all power cores in the database.
      * @return A list of PowerCore objects
      */
-    public List<PowerCore> getPowerCores() {
-        return null;
+    public List<PowerCore> getAllPowerCores() {
+        ArrayList<PowerCore> powerCores = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery(SELECT_ALL_POWER_CORE_INFO, EMPTY_ARRAY_OF_STRINGS);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                int id = cursor.getInt(0);
+                int cannonBoost = cursor.getInt(1);
+                int engineBoost = cursor.getInt(2);
+                String image = cursor.getString(3);
+                PowerCore powerCore = new PowerCore(cannonBoost,engineBoost, image);
+                // powerCore.setId(id);
+                powerCores.add(powerCore);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return powerCores;
     }
+
+    public void emptyDatabase() {
+        DbOpenHelper.deleteAllTables(db);
+        DbOpenHelper.createAllTables(db);
+    }
+
+    private static final String[] EMPTY_ARRAY_OF_STRINGS = {};
+    private static final String SELECT_ALL_BACKGROUND_OBJECT_INFO= "select * from background_objects";
+    private static final String SELECT_ALL_ASTEROID_TYPE_INFO= "select * from asteroid_types";
+    private static final String SELECT_ALL_LEVEL_INFO = "select * from levels";
+    private static final String SELECT_ALL_LEVEL_BACKGROUND_OBJECTS_INFO= "select * from level_background_objects";
+    private static final String SELECT_ALL_LEVEL_ASTROID_INFO= "select * from level_asteroid_types";
+    private static final String SELECT_ALL_MAIN_BODY_INFO= "select * from main_bodies";
+    private static final String SELECT_ALL_CANNON_INFO= "select * from cannons";
+    private static final String SELECT_ALL_LEFT_WING_INFO= "select * from left_wings";
+    private static final String SELECT_ALL_ENGINE_INFO= "select * from engines";
+    private static final String SELECT_ALL_POWER_CORE_INFO= "select * from power_cores";
 }

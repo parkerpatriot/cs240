@@ -5,6 +5,7 @@ package edu.byu.cs.superasteroids.model;
  */
 public class BackgroundObject implements Comparable<BackgroundObject> {
     private String mImage;
+    private int id;
 
     /**
      * Constructor.
@@ -27,4 +28,11 @@ public class BackgroundObject implements Comparable<BackgroundObject> {
         return this.getImage().compareTo(backgroundImage.getImage());
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
